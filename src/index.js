@@ -1,42 +1,44 @@
-import {createStore} from 'redux';
+import {createStore} from "redux";
 
-const plus = document.getElementById("plus");
-const minus = document.getElementById("minus");
-const number = document.querySelector("span");
+const input = document.querySelector("input");
+const form = document.querySelector("form");
+const ul = document.querySelector("ul");
 
+const ADD_TODO = "ADD_TODO";
+const DELETE_TODO = "DELETE_TODO";
 
-//Este es el reducer, la única función que puede
-//modificar el estado de la app por medio de una accion
-//Dispacth va a llamar el reducer con el estado actual y lo
-// va a modificar con la accion que indiquemos.
-
-const countModifier = (count = 0, action) => {
-    
+const reducer = (state = [], action) => {
+    console.log(action)
     switch (action.type) {
-        case "plus":
-            return count + 1;
-        case "minus":
-            return count - 1;
+        case ADD_TODO:
+            return [...state, {text: action.text}];
+        case DELETE_TODO:
+            return []
         default:
-            return count;
-    }   
+            return state;
+    }
 }
 
-const countStore = createStore(countModifier)
+const store = createStore(reducer);
 
-//El subscriptor es que está pendiente de chismoso
-//cuando hay un cambio en el reducer
-const onChange = () => {
-    number.innerText = countStore.getState();
+store.subscribe(() => console.log(store.getState()))
+
+
+
+
+
+
+const createTodo = (todo) => {
+    const li = document.createElement("li");
+    li.innerText = todo;
+    ul.appendChild(li)
 }
-countStore.subscribe(onChange)
 
+const onSubmit = (e) => {
+    e.preventDefault();
+    const todo = input.value;
+    input.value = "";
+    store.dispatch({type: ADD_TODO, text: todo})
+}
 
-plus.addEventListener("click", () => {
-    countStore.dispatch({type: "plus"})
-})
-
-minus.addEventListener("click", () => {
-    countStore.dispatch({type: "minus"})
-})
-
+form.addEventListener("submit", onSubmit);
